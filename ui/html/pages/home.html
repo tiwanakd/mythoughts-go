@@ -4,8 +4,13 @@
     <div class="thought-containter">
         <h3>{{.Content}}</h3>
         <div class="thought-containter-inner">
-            <p>Agree: {{.AgreeCount}} || Disagree: {{.DisagreeCount}}</p>
-            <p>Created by user on {{.Created}}</p>
+            <div class="thought-btns">
+                <button id="agree-btn">&check; | {{.AgreeCount}}</button>
+                <button id="disagree-btn">&cross; | {{.DisagreeCount}}</button>
+            </div>
+            <div class="thought-created">
+                Created by user on {{.Created}}
+            </div>
         </div>
     </div>
     {{end}}
