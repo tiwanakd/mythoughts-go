@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	a := app.New()
+	a, db := app.New()
+	defer db.Close()
 	srv := server.New(a.Logger, a.Routes())
 	srv.Start()
 }

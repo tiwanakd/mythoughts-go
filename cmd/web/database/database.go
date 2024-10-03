@@ -6,17 +6,25 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func OpenDB(dsn string) (*sql.DB, error) {
+type Database struct {
+	*sql.DB
+}
+
+func OpenDB(dsn string) (Database, error) {
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		return nil, err
+		return Database{}, err
 	}
 
 	err = db.Ping()
 	if err != nil {
 		db.Close()
-		return nil, err
+		return Database{}, err
 	}
 
-	return db, nil
+	return Database{DB: db}, nil
+}
+
+func (d *Database) Close() {
+	d.DB.Close()
 }

@@ -6,13 +6,15 @@ import (
 	"os"
 
 	"github.com/tiwanakd/mythoughts-go/cmd/web/database"
+	"github.com/tiwanakd/mythoughts-go/internal/models"
 )
 
 type Application struct {
-	Logger *slog.Logger
+	Logger   *slog.Logger
+	Thoughts models.ThoughtModel
 }
 
-func New() *Application {
+func New() (*Application, *database.Database) {
 
 	dsn := flag.String("dsn", os.Getenv("DATA_SOURCE_NAME"), "PostgreSQL Data Source Name")
 	flag.Parse()
@@ -24,9 +26,11 @@ func New() *Application {
 		logger.Error("database error:" + err.Error())
 		os.Exit(1)
 	}
-	defer db.Close()
 
-	return &Application{
-		Logger: logger,
+	app := &Application{
+		Logger:   logger,
+		Thoughts: models.ThoughtModel{DB: db.DB},
 	}
+
+	return app, &db
 }

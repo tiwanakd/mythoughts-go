@@ -1,0 +1,12 @@
+{{define "title"}}Home{{end}}
+{{define "main"}}
+    {{range .}}
+    <div class="thought-containter">
+        <h3>{{.Content}}</h3>
+        <div class="thought-containter-inner">
+            <p>Agree: {{.AgreeCount}} || Disagree: {{.DisagreeCount}}</p>
+            <p>Created by user on {{.Created}}</p>
+        </div>
+    </div>
+    {{end}}
+{{end}}

@@ -1,0 +1,38 @@
+body{
+    background-color: rgb(252, 240, 221);
+}
+h1{
+    text-align: center;
+    margin-bottom: 25px;
+    font-family: "Special Elite", cursive;
+    font-size: 4em;
+    font-weight: bold;
+}
+h3{
+    font-family: "Special Elite", cursive;
+    font-size: 1.4em;
+    font-weight: bold;
+}
+main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width:63%;
+    margin: 0 auto;
+}
+.thought-containter{
+    border: 1px solid black;
+    width: 100%;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+.thought-containter-inner{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    font-family: 'Times New Roman', Times, serif;
+}
