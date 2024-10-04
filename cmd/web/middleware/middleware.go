@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-
-	"github.com/tiwanakd/mythoughts-go/cmd/web/helpers"
 )
 
 type Middleware struct {
@@ -54,7 +52,8 @@ func (m *Middleware) RecoverPanic(next http.Handler) http.Handler {
 		defer func() {
 			if err := recover(); err != nil {
 				w.Header().Set("Connection", "close")
-				helpers.ServerError(w, r, fmt.Errorf("error: %s", err), m.Logger)
+				w.Write([]byte(http.StatusText(http.StatusInternalServerError)))
+				m.Logger.Error("panic: " + fmt.Sprintf("error: %s", err))
 			}
 		}()
 

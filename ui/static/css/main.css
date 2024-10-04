@@ -22,6 +22,11 @@ h3{
     font-weight: bold;
 }
 
+#display-none{
+    margin-top: 60px;
+    text-align: center;
+}
+
 main{
     flex:1; 
     width:60%;
@@ -45,6 +50,12 @@ main{
     font-family: 'Times New Roman', Times, serif;
     margin-top: 40px;
     margin-bottom: 10px;
+}
+
+.thought-btns {
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
 }
 
 .thought-btns button{
@@ -105,6 +116,7 @@ footer a {
 
 footer a:hover {
     color: rgb(192, 138, 77);
+    text-decoration: underline;
 }
 
 nav {
@@ -142,5 +154,31 @@ nav {
 
 .left-links a:hover, .right-links a:hover {
     color: rgb(192, 138, 77);
+    text-decoration: underline;
 }
 
+.new-tg-btn{
+    margin-bottom: 6px;
+    padding: 2px 22px;
+    background: none;
+    border: 2px solid rgb(5, 199, 206);
+    color: rgb(5, 199, 206);
+    font-weight: bold;
+    font-family: cursive;
+    border-radius: 5px;
+    box-shadow: 1px 1px 2px rgba(51, 49, 49, 0.116);
+    transition: all 0.3s ease;
+}
+
+.new-tg-btn:hover{
+    background-color: rgba(0, 0, 0, 0.05); 
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); 
+    transform: translateY(-2px);
+    cursor: pointer;
+}
+
+.new-tg-btn:active{
+    background-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);   
+}

@@ -19,8 +19,7 @@ type ThoughtModel struct {
 }
 
 func (m *ThoughtModel) ListAll() ([]Thought, error) {
-
-	stmt := "SELECT content, created, agreecount, disagreecount FROM thoughts ORDER BY created DESC"
+	stmt := "SELECT id, content, created, agreecount, disagreecount FROM thoughts ORDER BY created DESC"
 
 	rows, err := m.DB.Query(stmt)
 	if err != nil {
@@ -34,7 +33,7 @@ func (m *ThoughtModel) ListAll() ([]Thought, error) {
 
 	for rows.Next() {
 		var thought Thought
-		err := rows.Scan(&thought.Content, &thought.Created, &thought.AgreeCount, &thought.DisagreeCount)
+		err := rows.Scan(&thought.ID, &thought.Content, &thought.Created, &thought.AgreeCount, &thought.DisagreeCount)
 		if err != nil {
 			return nil, err
 		}
@@ -42,4 +41,40 @@ func (m *ThoughtModel) ListAll() ([]Thought, error) {
 	}
 
 	return thoughts, nil
+}
+
+func (m *ThoughtModel) AddLike(id int) (int, error) {
+	query := "UPDATE thoughts SET agreecount = agreecount + 1 WHERE id = $1 RETURNING agreecount"
+
+	stmt, err := m.DB.Prepare(query)
+	if err != nil {
+		return 0, err
+	}
+	defer stmt.Close()
+
+	var agreeCount int
+	err = stmt.QueryRow(id).Scan(&agreeCount)
+	if err != nil {
+		return 0, err
+	}
+
+	return agreeCount, nil
+}
+
+func (m *ThoughtModel) AddDislike(id int) (int, error) {
+	query := "UPDATE thoughts SET disagreecount = disagreecount + 1 WHERE id = $1 RETURNING disagreecount"
+
+	stmt, err := m.DB.Prepare(query)
+	if err != nil {
+		return 0, err
+	}
+	defer stmt.Close()
+
+	var disagreeCount int
+	err = stmt.QueryRow(id).Scan(&disagreeCount)
+	if err != nil {
+		return 0, err
+	}
+
+	return disagreeCount, nil
 }
