@@ -10,6 +10,7 @@ import (
 
 type TemplateData struct {
 	CurrentYear int
+	Form        any
 	Thoughts    []models.Thought
 }
 

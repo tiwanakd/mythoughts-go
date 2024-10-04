@@ -78,3 +78,9 @@ func (m *ThoughtModel) AddDislike(id int) (int, error) {
 
 	return disagreeCount, nil
 }
+
+func (m *ThoughtModel) Insert(content string) error {
+	stmt := "INSERT INTO thoughts (content, created) VALUES ($1, NOW())"
+	_, err := m.DB.Exec(stmt, content)
+	return err
+}

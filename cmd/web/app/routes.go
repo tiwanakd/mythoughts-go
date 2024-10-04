@@ -14,7 +14,6 @@ func (app *Application) Routes() http.Handler {
 	router.Handle("GET /static/", http.StripPrefix("/static", fileServer))
 
 	router.HandleFunc("GET /{$}", app.home)
-	router.HandleFunc("GET /thought/new", app.newThought)
 	router.HandleFunc("POST /thought/new", app.newThoughtPost)
 	router.HandleFunc("POST /like/{id}", app.addLikePost)
 	router.HandleFunc("POST /dislike/{id}", app.addDislikePost)

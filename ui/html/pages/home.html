@@ -1,10 +1,23 @@
 {{define "title"}}Home{{end}}
 {{define "main"}}
-    <button class="new-tg-btn">New &plus;</button>
+    <div class="new-tg-btn-container">
+        <button class="new-tg-btn" id="new-btn">New &plus;</button>
+        <button id="close-btn">X</button>
+    </div>
+    <div class="new-tg-containter">
+        <form action="/thought/new" method="post">
+        <textarea name="new-thought" id="new-tg-box" placeholder="What are you thinking?"></textarea>
+        <div class="new-post-tg-div">
+            <button class="new-tg-btn" type="submit">Post</button>
+        </div>
+        </form>
+    </div>
     {{if .Thoughts}}
         {{range .Thoughts}}
         <div class="thought-containter">
-            <h3>{{.Content}}</h3>
+            <div class="thought-content-continer">
+                <h3>{{.Content}}</h3>
+            </div>
             <div class="thought-containter-inner">
                 <div class="thought-btns">
                     <form  method="post" id="like-form-{{.ID}}">
@@ -24,3 +37,4 @@
         <h3 id="display-none">There is nothing here yet!</h3>
     {{end}}
 {{end}}
+

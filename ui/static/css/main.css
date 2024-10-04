@@ -16,6 +16,10 @@ h1{
     font-weight: bold;
 }
 
+.thought-content-continer{
+    margin: 7px;
+}
+
 h3{
     font-family: "Special Elite", cursive;
     font-size: 1.4em;
@@ -37,8 +41,6 @@ main{
     width: 100%;
     margin-bottom: 5px;
     border-radius: 5px;
-    padding-left: 12px;
-    padding-right: 12px;
     box-shadow: 1px 1px 2px black;
 }
 
@@ -56,6 +58,7 @@ main{
     display: flex;
     flex-direction: row;
     gap: 3px;
+    margin-left: 7px;
 }
 
 .thought-btns button{
@@ -96,6 +99,7 @@ main{
     font-family: cursive;
     font-size: 0.9em;
     font-weight: bold;
+    margin-right: 7px;
 }
 
 footer{
@@ -181,4 +185,64 @@ nav {
     background-color: rgba(0, 0, 0, 0.1);
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
     transform: translateY(0);   
+}
+
+.new-tg-containter{
+    display: none;
+    margin-bottom: 4px;
+}
+
+textarea{
+    background-color: rgb(249, 253, 253);
+    font-family: "Special Elite", cursive;
+    font-size: 1.4em;
+    resize: none;
+    padding: 13px;
+    width: 97.6%;
+    height: 92px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 2px rgba(51, 49, 49, 0.116);
+}
+
+.new-tg-btn-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+#close-btn{
+    display: none;
+    margin-bottom: 6px;
+    background: none;
+    border: 2px solid red;
+    border-radius: 5px;
+    color: red;
+    font-weight: bold;
+    padding: 2px 8px; 
+}
+#close-btn:hover{
+    background-color: rgba(0, 0, 0, 0.05); 
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); 
+    transform: translateY(-2px);
+    cursor: pointer;
+}
+
+#close-btn:active{
+    display: none;
+    background-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);   
+}
+
+.close-far-end #close-btn {
+    margin-left: auto
+}
+
+.new-post-tg-div{   
+    display: flex;
+    flex-direction: row-reverse;
+    margin-top: 4px;
+    margin-bottom: 8px;
 }

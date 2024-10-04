@@ -18,12 +18,22 @@ func (app *Application) home(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, http.StatusOK, "home.html", data)
 }
 
-func (app *Application) newThought(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Display page to create new thought"))
-}
-
 func (app *Application) newThoughtPost(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Post new thought"))
+	err := r.ParseForm()
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	content := r.Form.Get("new-thought")
+
+	err = app.Thoughts.Insert(content)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (app *Application) addLikePost(w http.ResponseWriter, r *http.Request) {
