@@ -1,7 +1,7 @@
 package app
 
 import (
-	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -49,13 +49,9 @@ func (app *Application) addLikePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//sending a json reponse with the new Agree count
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusCreated)
-	encoder := json.NewEncoder(w)
-	err = encoder.Encode(map[string]int{
-		"newAgreeCount": newAgreeCount,
-	})
+	fmt.Fprint(w, newAgreeCount)
 }
 
 func (app *Application) addDislikePost(w http.ResponseWriter, r *http.Request) {
@@ -71,10 +67,7 @@ func (app *Application) addDislikePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusCreated)
-	encoder := json.NewEncoder(w)
-	encoder.Encode(map[string]int{
-		"newDisagreeCount": newDisagreeCount,
-	})
+	fmt.Fprint(w, newDisagreeCount)
 }
