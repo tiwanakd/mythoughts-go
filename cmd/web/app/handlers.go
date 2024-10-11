@@ -40,8 +40,11 @@ func (app *Application) newThoughtPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	form.CheckField(validator.NotBlank(form.Content), "content", "This field Cannot be blank")
+	form.CheckField(validator.MinChars(form.Content, 30), "content", "Your thought should have alteast 50 characters")
+	form.CheckField(validator.MaxChars(form.Content, 200), "content", "Your thought cannot have more than 200 Characters")
 
 	if !form.IsValid() {
+		w.Header().Set("HX-Reswap", "innerHTML")
 		w.WriteHeader(http.StatusUnprocessableEntity)
 
 		data := app.newTemplateData(r)
@@ -62,6 +65,7 @@ func (app *Application) newThoughtPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusCreated)
 	//get the home page template from cache
 	tmpl := app.TemplateCache["home.html"]
 

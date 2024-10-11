@@ -1,6 +1,7 @@
 //Empty out the content textarea on each page refresh;w
 document.addEventListener("DOMContentLoaded", function() {
     textArea.value = "";
+    contentErrordiv.style.display = "none"
 });
 
 //add button feature to show and hide the textarea
@@ -11,6 +12,7 @@ const btnContainer = document.querySelector('.new-tg-btn-container');
 const bthThoughtClear = document.getElementById("thought-clear-btn");
 const btnThoughtPost = document.getElementById("thought-post-btn");
 const textArea = document.getElementById("new-tg-box");
+const contentErrordiv = document.getElementById("content-error")
 
 //Show the form and hide the New button when the New button is clicked
 newBtn.addEventListener("click", () => {
@@ -26,23 +28,45 @@ closeBtn.addEventListener("click", () => {
     closeBtn.style.display = 'none';
     newBtn.style.display = 'inline-block';
     btnContainer.classList.remove('close-far-end');
-    document.getElementById("content-error-lbl").style.display = 'none';
+    contentErrordiv.style.display = 'none';
+    const contentErrorlbl = document.getElementById("content-error-lbl") 
+    if (contentErrorlbl != null) {
+        contentErrorlbl.style.display = 'none';
+        contentErrorlbl.value = '';
+        textArea.classList.remove("error-field");
+    }
 });
 
 bthThoughtClear.addEventListener("click", () => {
     textArea.value = "";
+    const contentErrorlbl = document.getElementById("content-error-lbl") 
+    if (contentErrorlbl != null) {
+        contentErrorlbl.style.display = 'none';
+        contentErrorlbl.value = '';
+        textArea.classList.remove("error-field");
+    }
+})
+
+btnThoughtPost.addEventListener("click", () => {
+    const contentErrorlbl = document.getElementById("content-error-lbl");
+    if (contentErrorlbl != null){
+        contentErrorlbl.style.display = 'inline'
+    }
 })
 
 document.addEventListener("htmx:afterOnLoad", function(event) {
-    const contentErrorLabel = document.getElementById("content-error-lbl")
     // Check for 422 status to apply error styles and keep form visible
     if (event.detail.xhr.status === 422) {
+        contentErrordiv.style.display = 'inline-block'
         textArea.classList.add("error-field");
-    } else if (event.detail.xhr.status === 200) {
+    } else if (event.detail.xhr.status === 201) {
         // Hide form on successful POST (200)
         textArea.value = "";
-        contentErrorLabel.style.display = 'none';
-        contentErrorLabel.value = '';
+        const contentErrorlbl = document.getElementById("content-error-lbl");
+        if (contentErrorlbl != null){
+            contentErrorlbl.style.display = 'none'
+            contentErrorlbl.value = ''
+        }
         document.getElementById("thought-form-container").style.display = 'none';
         newBtn.style.display = 'inline';
         closeBtn.style.display = 'none';

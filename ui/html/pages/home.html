@@ -2,6 +2,7 @@
 {{define "main"}}
     <div class="new-tg-btn-container">
         <button class="new-tg-btn" id="new-btn">New &plus;</button>
+        <!-- TODO: Need to figure out the CSP error while re-poulation of the validation error -->
         <div id="content-error">
             {{block "content-error-block" .}}
                 {{with .Form.FieldErrors.content}}
@@ -12,7 +13,6 @@
         <button id="close-btn">X</button>
     </div>
    
-    <!-- Need to work on error handling and swap  -->
     <div class="new-tg-containter" id="thought-form-container">
         <form hx-post="/thought/new" hx-target="#thoughts-list" hx-swap="beforebegin" hx-target-422="#content-error">
         <textarea 
