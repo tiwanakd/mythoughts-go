@@ -285,6 +285,5 @@ textarea{
 }
 
 .error-field {
-    border-color: #C0392B !important;
-    border-width: 2px !important;
+    border: 2px solid red;
 }
