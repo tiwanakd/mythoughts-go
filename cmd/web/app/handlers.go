@@ -4,18 +4,26 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+
+	"github.com/tiwanakd/mythoughts-go/internal/validator"
 )
 
 func (app *Application) home(w http.ResponseWriter, r *http.Request) {
-	thoughts, err := app.Thoughts.ListAll()
+	thoughts, err := app.thoughts.ListAll()
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
 
 	data := app.newTemplateData(r)
+	data.Form = newThoughtForm{}
 	data.Thoughts = thoughts
 	app.render(w, r, http.StatusOK, "home.html", data)
+}
+
+type newThoughtForm struct {
+	Content string
+	validator.Validator
 }
 
 func (app *Application) newThoughtPost(w http.ResponseWriter, r *http.Request) {
@@ -25,15 +33,45 @@ func (app *Application) newThoughtPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	content := r.Form.Get("new-thought")
+	content := r.Form.Get("newThought")
 
-	err = app.Thoughts.Insert(content)
+	form := newThoughtForm{
+		Content: content,
+	}
+
+	form.CheckField(validator.NotBlank(form.Content), "content", "This field Cannot be blank")
+
+	if !form.IsValid() {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		data := app.newTemplateData(r)
+		data.Form = form
+
+		tmpl := app.TemplateCache["home.html"]
+		err = tmpl.ExecuteTemplate(w, "content-error-block", data)
+		if err != nil {
+			app.serverError(w, r, err)
+		}
+
+		return
+	}
+
+	thought, err := app.thoughts.Insert(content)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	//get the home page template from cache
+	tmpl := app.TemplateCache["home.html"]
+
+	//execute the thoughts-list with new retuened thougt
+	err = tmpl.ExecuteTemplate(w, "thoughts-list", thought)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
 }
 
 func (app *Application) addLikePost(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +81,7 @@ func (app *Application) addLikePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newAgreeCount, err := app.Thoughts.AddLike(id)
+	newAgreeCount, err := app.thoughts.AddLike(id)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
@@ -61,7 +99,7 @@ func (app *Application) addDislikePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newDisagreeCount, err := app.Thoughts.AddDislike(id)
+	newDisagreeCount, err := app.thoughts.AddDislike(id)
 	if err != nil {
 		app.serverError(w, r, err)
 		return

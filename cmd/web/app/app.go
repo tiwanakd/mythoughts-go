@@ -13,7 +13,8 @@ import (
 
 type Application struct {
 	Logger        *slog.Logger
-	Thoughts      models.ThoughtModel
+	thoughts      models.ThoughtModel
+	thought       models.Thought
 	TemplateCache map[string]*template.Template
 }
 
@@ -37,7 +38,7 @@ func New() (*Application, *database.Database) {
 
 	app := &Application{
 		Logger:        logger,
-		Thoughts:      models.ThoughtModel{DB: db.DB},
+		thoughts:      models.ThoughtModel{DB: db.DB},
 		TemplateCache: templateCache,
 	}
 

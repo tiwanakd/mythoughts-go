@@ -4,34 +4,52 @@
         <button class="new-tg-btn" id="new-btn">New &plus;</button>
         <button id="close-btn">X</button>
     </div>
+   
+    <!-- Need to work on error handling and swap  -->
     <div class="new-tg-containter">
-        <form action="/thought/new" method="post">
-        <textarea name="new-thought" id="new-tg-box" placeholder="What are you thinking?"></textarea>
+        <form hx-post="/thought/new" hx-target="#thoughts-list" hx-swap="beforebegin" hx-target-422="#content-error">
+        <div id="content-error">
+            {{block "content-error-block" .}}
+                {{with .Form.FieldErrors.content}}
+                    <label class="error">{{.}}</label>
+                {{end}}
+            {{end}}
+        </div>
+        <textarea 
+            name="newThought" 
+            id="new-tg-box" 
+            placeholder="What are you thinking?"
+            >
+        </textarea>
         <div class="new-post-tg-div">
-            <button class="new-tg-btn" type="submit">Post</button>
+            <button type="button" class="new-tg-clear-btn" id="thought-clear-btn">Clear</button>
+            <button class="new-tg-btn" type="submit" id="thought-post-btn">Post</button>
         </div>
         </form>
     </div>
+
     {{if .Thoughts}}
         {{range .Thoughts}}
-        <div class="thought-containter">
-            <div class="thought-content-continer">
-                <h3>{{.Content}}</h3>
-            </div>
-            <div class="thought-containter-inner">
-                <div class="thought-btns">
-                    <button id="agree-btn" hx-post="/like/{{.ID}}" hx-target="#agree-count-{{.ID}}">&check;
-                        | <span id="agree-count-{{.ID}}">{{.AgreeCount}}</span>
-                    </button>
-                    <button id="disagree-btn" hx-post="/dislike/{{.ID}}" hx-target="#disagree-count-{{.ID}}">&cross; 
-                        | <span id="disagree-count-{{.ID}}">{{.DisagreeCount}}</span>
-                    </button>
+        {{block "thoughts-list" .}}
+            <div class="thought-containter" id="thoughts-list">
+                <div class="thought-content-continer">
+                    <h3>{{.Content}}</h3>
                 </div>
-                <div class="thought-created">
-                    Created by user on {{humanDate .Created}}
+                <div class="thought-containter-inner">
+                    <div class="thought-btns">
+                        <button id="agree-btn" hx-post="/like/{{.ID}}" hx-target="#agree-count-{{.ID}}">&check;
+                            | <span id="agree-count-{{.ID}}">{{.AgreeCount}}</span>
+                        </button>
+                        <button id="disagree-btn" hx-post="/dislike/{{.ID}}" hx-target="#disagree-count-{{.ID}}">&cross; 
+                            | <span id="disagree-count-{{.ID}}">{{.DisagreeCount}}</span>
+                        </button>
+                    </div>
+                    <div class="thought-created">
+                        Created by user on {{humanDate .Created}}
+                    </div>
                 </div>
             </div>
-        </div>
+        {{end}}
         {{end}}
     {{else}}
         <h3 id="display-none">There is nothing here yet!</h3>

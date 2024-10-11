@@ -13,11 +13,12 @@
         <h1>My Thoughts</h1>
    </header> 
    {{template "nav" .}}
-   <main>
+   <main hx-ext="response-targets">
         {{template "main" .}}
    </main>
    <footer>Powered By <a href='https://golang.org/'>Go</a> in {{.CurrentYear}}</footer>
    <script src="/static/js/htmx.min.js" type="text/javascript"></script>
+   <script src="/static/js/response-targets.js" type="text/javascript"></script>
    <script src="/static/js/main.js" type="text/javascript"></script>
 </body>
 </html>
