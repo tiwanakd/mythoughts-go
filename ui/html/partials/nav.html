@@ -5,12 +5,19 @@
             <a href="/">Home</a>
             <a href="">About</a>
             <a href="">Sort</a>
-            <a href="">New Thought</a>
+            {{if .IsAuthenticated}}
+                <a href="">New Thought</a>
+            {{end}}
         </div>
         <div class="right-links">
-            <a href="">Account</a>
-            <a href="">Login</a>
-            <a href="">Signup</a>
+            <a href="/user/login">Login</a>
+            <a href="/user/signup">Signup</a>
+            {{if .IsAuthenticated}}
+                <a href="/user/account">Account</a>
+                <form action="/user/logout" method="post">
+                    <input id="logout-btn" type="submit" value="Logout">
+                </form>
+            {{end}}
         </div>
     </div>
 </nav>

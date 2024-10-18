@@ -1,7 +1,11 @@
 //Empty out the content textarea on each page refresh;w
 document.addEventListener("DOMContentLoaded", function() {
-    textArea.value = "";
-    contentErrordiv.style.display = "none"
+    if (textArea != null){
+        textArea.value = "";
+    }
+    if (contentErrordiv != null) {
+        contentErrordiv.style.display = "none"
+    }
 });
 
 //add button feature to show and hide the textarea
@@ -15,44 +19,52 @@ const textArea = document.getElementById("new-tg-box");
 const contentErrordiv = document.getElementById("content-error")
 
 //Show the form and hide the New button when the New button is clicked
-newBtn.addEventListener("click", () => {
-    formContainer.style.display = 'block';
-    closeBtn.style.display = 'inline-block'
-    newBtn.style.display = 'none'
-    btnContainer.classList.add('close-far-end')
-});
+if (newBtn != null) {
+    newBtn.addEventListener("click", () => {
+        formContainer.style.display = 'block';
+        closeBtn.style.display = 'inline-block'
+        newBtn.style.display = 'none'
+        btnContainer.classList.add('close-far-end')
+    });
+}
 
 //when the close button is clicked hide the form and close button
-closeBtn.addEventListener("click", () => {
-    formContainer.style.display = 'none';
-    closeBtn.style.display = 'none';
-    newBtn.style.display = 'inline-block';
-    btnContainer.classList.remove('close-far-end');
-    contentErrordiv.style.display = 'none';
-    const contentErrorlbl = document.getElementById("content-error-lbl") 
-    if (contentErrorlbl != null) {
-        contentErrorlbl.style.display = 'none';
-        contentErrorlbl.value = '';
-        textArea.classList.remove("error-field");
-    }
-});
+if (closeBtn != null){
+    closeBtn.addEventListener("click", () => {
+        formContainer.style.display = 'none';
+        closeBtn.style.display = 'none';
+        newBtn.style.display = 'inline-block';
+        btnContainer.classList.remove('close-far-end');
+        contentErrordiv.style.display = 'none';
+        const contentErrorlbl = document.getElementById("content-error-lbl") 
+        if (contentErrorlbl != null) {
+            contentErrorlbl.style.display = 'none';
+            contentErrorlbl.value = '';
+            textArea.classList.remove("error-field");
+        }
+    });
+}
 
-bthThoughtClear.addEventListener("click", () => {
-    textArea.value = "";
-    const contentErrorlbl = document.getElementById("content-error-lbl") 
-    if (contentErrorlbl != null) {
-        contentErrorlbl.style.display = 'none';
-        contentErrorlbl.value = '';
-        textArea.classList.remove("error-field");
-    }
-})
+if (bthThoughtClear != null){
+    bthThoughtClear.addEventListener("click", () => {
+        textArea.value = "";
+        const contentErrorlbl = document.getElementById("content-error-lbl") 
+        if (contentErrorlbl != null) {
+            contentErrorlbl.style.display = 'none';
+            contentErrorlbl.value = '';
+            textArea.classList.remove("error-field");
+        }
+    });
+}
 
-btnThoughtPost.addEventListener("click", () => {
-    const contentErrorlbl = document.getElementById("content-error-lbl");
-    if (contentErrorlbl != null){
-        contentErrorlbl.style.display = 'inline'
-    }
-})
+if (btnThoughtPost != null){
+    btnThoughtPost.addEventListener("click", () => {
+        const contentErrorlbl = document.getElementById("content-error-lbl");
+        if (contentErrorlbl != null){
+            contentErrorlbl.style.display = 'inline'
+        }
+    })
+}
 
 document.addEventListener("htmx:afterOnLoad", function(event) {
     // Check for 422 status to apply error styles and keep form visible
@@ -73,3 +85,13 @@ document.addEventListener("htmx:afterOnLoad", function(event) {
         textArea.classList.remove("error-field"); // Remove error styles on success
     }
 });
+
+clearUserFormBtn = document.getElementById("clear-user-form");
+if (clearUserFormBtn != null){
+        clearUserFormBtn.addEventListener("click", () => {
+        document.getElementById("name-input").value = ""; 
+        document.getElementById("username-input").value = ""; 
+        document.getElementById("email-input").value = ""; 
+        document.getElementById("password-input").value = ""; 
+    });
+}

@@ -9,9 +9,12 @@ import (
 )
 
 type TemplateData struct {
-	CurrentYear int
-	Form        any
-	Thoughts    []models.Thought
+	CurrentYear     int
+	Form            any
+	Flash           string
+	Thoughts        []models.Thought
+	Thought         models.Thought
+	IsAuthenticated bool
 }
 
 func humanDate(t time.Time) string {

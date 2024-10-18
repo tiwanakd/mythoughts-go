@@ -81,7 +81,7 @@ func (m *ThoughtModel) AddDislike(id int) (int, error) {
 
 func (m *ThoughtModel) Insert(content string) (Thought, error) {
 	query := `INSERT INTO thoughts (content, created) VALUES ($1, NOW())
-	RETURNING content, created`
+	RETURNING id, content, created`
 
 	stmt, err := m.DB.Prepare(query)
 	if err != nil {
@@ -89,7 +89,7 @@ func (m *ThoughtModel) Insert(content string) (Thought, error) {
 	}
 
 	var thought Thought
-	err = stmt.QueryRow(content).Scan(&thought.Content, &thought.Created)
+	err = stmt.QueryRow(content).Scan(&thought.ID, &thought.Content, &thought.Created)
 	if err != nil {
 		return Thought{}, err
 	}

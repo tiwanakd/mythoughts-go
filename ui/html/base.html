@@ -13,8 +13,11 @@
         <h1>My Thoughts</h1>
    </header> 
    {{template "nav" .}}
+     {{with .Flash}}
+          <div class="flash-login">{{.}}</div>
+     {{end}}
    <main hx-ext="response-targets">
-        {{template "main" .}}
+     {{template "main" .}}
    </main>
    <footer>Powered By <a href='https://golang.org/'>Go</a> in {{.CurrentYear}}</footer>
    <script src="/static/js/htmx.min.js" type="text/javascript"></script>

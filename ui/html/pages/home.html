@@ -1,6 +1,7 @@
 {{define "title"}}Home{{end}}
 {{define "main"}}
     <div class="new-tg-btn-container">
+        {{if .IsAuthenticated}}
         <button class="new-tg-btn" id="new-btn">New &plus;</button>
         <!-- TODO: Need to figure out the CSP error while re-poulation of the validation error -->
         <div id="content-error">
@@ -11,6 +12,7 @@
             {{end}}
         </div>
         <button id="close-btn">X</button>
+        {{end}}
     </div>
    
     <div class="new-tg-containter" id="thought-form-container">
@@ -28,10 +30,10 @@
         </form>
     </div>
 
+    <div class="thought-containter" id="thoughts-list">
     {{if .Thoughts}}
         {{range .Thoughts}}
         {{block "thoughts-list" .}}
-            <div class="thought-containter" id="thoughts-list">
                 <div class="thought-content-continer">
                     <h3>{{.Content}}</h3>
                 </div>
@@ -48,11 +50,9 @@
                         Created by user on {{humanDate .Created}}
                     </div>
                 </div>
-            </div>
         {{end}}
         {{end}}
-    {{else}}
-        <h3 id="display-none">There is nothing here yet!</h3>
     {{end}}
+    </div>
 {{end}}
 

@@ -1,0 +1,28 @@
+{{define "title"}}Login{{end}}
+{{define "main"}}
+<h3 class="user-form-heading">Login</h3>
+<div class="user-form-container">
+<form action="/user/login" method="post" novalidate>
+    {{range .Form.NonFieldErrors}}
+        <div class="error-invalid-creds">{{.}}</div>
+    {{end}}
+    <div>
+        <label class="user-form-labels">Email:</label>
+        {{with .Form.FieldErrors.email}}
+            <label class="error">{{.}}</label>
+        {{end}}
+        <input type="email" name="email" id="email-input" value="{{.Form.Email}}">
+    </div>
+    <div>
+        <label class="user-form-labels">Password:</label>
+        {{with .Form.FieldErrors.password}}
+            <label class="error">{{.}}</label>
+        {{end}}
+        <input type="password" name="password" id="password-input">
+    </div>
+    <div>
+        <input type="submit" value="Login">
+    </div>
+</form>
+</div>
+{{end}}

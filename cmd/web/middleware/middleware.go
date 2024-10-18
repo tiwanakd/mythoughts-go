@@ -8,11 +8,17 @@ import (
 
 type Middleware struct {
 	Logger *slog.Logger
+	Autheticator
 }
 
-func New(logger *slog.Logger) *Middleware {
+type Autheticator interface {
+	IsAuthenticated(r *http.Request) bool
+}
+
+func New(logger *slog.Logger, auth Autheticator) *Middleware {
 	return &Middleware{
-		Logger: logger,
+		Logger:       logger,
+		Autheticator: auth,
 	}
 }
 
@@ -72,6 +78,23 @@ func (m *Middleware) CommonHeaders(next http.Handler) http.Handler {
 		w.Header().Set("X-XSS-Protection", "0")
 
 		w.Header().Set("Server", "Go")
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+// func (m *Middleware) IsAuthenticated(r *http.Request) bool {
+// 	return m.Authenticated
+// }
+
+func (m *Middleware) RequireAuthentication(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !m.IsAuthenticated(r) {
+			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+			return
+		}
+
+		w.Header().Add("Cache-Control", "no-store")
 
 		next.ServeHTTP(w, r)
 	})
