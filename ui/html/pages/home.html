@@ -16,7 +16,8 @@
     </div>
    
     <div class="new-tg-containter" id="thought-form-container">
-        <form hx-post="/thought/new" hx-target="#thoughts-list" hx-swap="beforebegin" hx-target-422="#content-error">
+        <form hx-post="/thought/new" hx-target-422="#content-error">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
         <textarea 
             name="newThought" 
             id="new-tg-box" 
@@ -30,10 +31,13 @@
         </form>
     </div>
 
-    <div class="thought-containter" id="thoughts-list">
+    <!-- Wrappting the thoughts div arround a form to inject the CSRFToken -->
+    <form>
+    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
     {{if .Thoughts}}
         {{range .Thoughts}}
-        {{block "thoughts-list" .}}
+            <!-- {{block "thoughts-list" .}} -->
+            <div class="thought-containter">
                 <div class="thought-content-continer">
                     <h3>{{.Content}}</h3>
                 </div>
@@ -41,18 +45,18 @@
                     <div class="thought-btns">
                         <button id="agree-btn" hx-post="/like/{{.ID}}" hx-target="#agree-count-{{.ID}}">&check;
                             | <span id="agree-count-{{.ID}}">{{.AgreeCount}}</span>
-                        </button>
                         <button id="disagree-btn" hx-post="/dislike/{{.ID}}" hx-target="#disagree-count-{{.ID}}">&cross; 
                             | <span id="disagree-count-{{.ID}}">{{.DisagreeCount}}</span>
                         </button>
                     </div>
                     <div class="thought-created">
-                        Created by user on {{humanDate .Created}}
+                        Created by {{.Username}} on {{humanDate .Created}}
                     </div>
                 </div>
-        {{end}}
+            <!-- {{end}} -->
+            </div>
         {{end}}
     {{end}}
-    </div>
+    </form>
 {{end}}
 

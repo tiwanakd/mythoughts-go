@@ -167,6 +167,75 @@ nav {
     padding: 0px;
     color: rgb(94, 64, 25);
     font-weight: normal;
+    transition: none;
+}
+
+#logout-btn:hover{
+    cursor: pointer;
+    color: rgb(192, 138, 77);
+    text-decoration: underline;
+}
+
+.nav-btn{
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0px;
+    color: rgb(94, 64, 25);
+    font-weight: normal;
+    font-family: cursive;
+    text-decoration: none;
+    font-size: 1em;
+}
+
+.nav-btn:hover{
+    color: rgb(192, 138, 77);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+nav a.live {
+    color: #34495E;
+    cursor: default;
+    text-decoration: underline;
+}
+
+nav a.live:hover {
+    color: #34495E;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    width: 80px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border: 2px solid rgb(61, 36, 4) ;
+    border-radius: 5px;
+    background-color: rgba(245, 245, 245, 0.966);
+    padding: 5px 5px;
+}
+
+.dropdown-content a {
+    color: rgb(94, 64, 25);
+    text-decoration: none;
+    text-align: left;
+    display: block;
+}
+
+.dropdown-content a:hover{
+    width: 100%;
+    background-color: rgba(245, 245, 245, 0.5);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
 }
 
 .new-tg-btn{
@@ -290,12 +359,10 @@ textarea{
     margin-bottom: 3px;
     font-size: 0.9em;
     display: block;
-    width: 100% !important;
 }
 
 .error-field {
     border: 2px solid red;
-    width: 100% !important;
 }
 
 .user-form-container{
@@ -403,4 +470,5 @@ textarea{
     font-family: cursive;
     box-shadow: 0px, 1px, 3px rgba(0, 0, 0, 0.849);
 }
+
 

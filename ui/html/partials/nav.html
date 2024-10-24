@@ -4,19 +4,28 @@
         <div class="left-links">
             <a href="/">Home</a>
             <a href="">About</a>
-            <a href="">Sort</a>
+            <div class="dropdown">
+                <button class="nav-btn">Sort</button>
+                <div class="dropdown-content">
+                    <a href="/sort/created">Created</a>
+                    <a href="/sort/agree">Agree</a>
+                    <a href="/sort/disagree">Disagree</a>
+                </div>
+            </div>
             {{if .IsAuthenticated}}
-                <a href="">New Thought</a>
+                <button class="nav-btn" id="newThoughtNavLink">New Thought</button>
             {{end}}
         </div>
         <div class="right-links">
-            <a href="/user/login">Login</a>
-            <a href="/user/signup">Signup</a>
             {{if .IsAuthenticated}}
                 <a href="/user/account">Account</a>
                 <form action="/user/logout" method="post">
+                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                     <input id="logout-btn" type="submit" value="Logout">
                 </form>
+            {{else}}
+                <a href="/user/login">Login</a>
+                <a href="/user/signup">Signup</a>
             {{end}}
         </div>
     </div>

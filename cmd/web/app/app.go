@@ -29,7 +29,7 @@ func New() (*Application, *database.Database) {
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	db, err := database.OpenDB(*dsn)
+	db, err := database.Open(*dsn)
 	if err != nil {
 		logger.Error("database:" + err.Error())
 		os.Exit(1)
@@ -38,6 +38,7 @@ func New() (*Application, *database.Database) {
 	templateCache, err := templates.NewTemplateCache()
 	if err != nil {
 		logger.Error("templateCache:" + err.Error())
+		os.Exit(1)
 	}
 
 	sessionManger := scs.New()

@@ -1,7 +1,6 @@
 package app
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"net/http"
@@ -12,7 +11,21 @@ import (
 )
 
 func (app *Application) home(w http.ResponseWriter, r *http.Request) {
-	thoughts, err := app.thoughts.ListAll()
+	thoughts, err := app.thoughts.List("created")
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	data := app.newTemplateData(r)
+	data.Form = newThoughtForm{}
+	data.Thoughts = thoughts
+	app.render(w, r, http.StatusOK, "home.html", data)
+}
+
+func (app *Application) sort(w http.ResponseWriter, r *http.Request) {
+	sortby := r.PathValue("sortby")
+	thoughts, err := app.thoughts.List(sortby)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
@@ -62,26 +75,34 @@ func (app *Application) newThoughtPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	thought, err := app.thoughts.Insert(content)
+	userID, ok := app.sessionManager.Get(r.Context(), "authenticatedUserID").(int)
+	if !ok {
+		app.serverError(w, r, err)
+		return
+	}
+
+	_, err = app.thoughts.Insert(content, userID)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
 
-	//get the home page template from cache
-	tmpl := app.TemplateCache["home.html"]
+	// //get the home page template from cache
+	// tmpl := app.TemplateCache["home.html"]
 
-	buf := new(bytes.Buffer)
+	// buf := new(bytes.Buffer)
 
-	//execute the thoughts-list with new retuened thougt
-	err = tmpl.ExecuteTemplate(buf, "thoughts-list", thought)
-	if err != nil {
-		app.serverError(w, r, err)
-		return
-	}
+	// //execute the thoughts-list with new retuened thougt
+	// err = tmpl.ExecuteTemplate(buf, "thoughts-list", thought)
+	// if err != nil {
+	// 	app.serverError(w, r, err)
+	// 	return
+	// }
 
+	//Using HX-Refresh header to trigger page refresh on successful POST
+	w.Header().Set("HX-Refresh", "true")
 	w.WriteHeader(http.StatusCreated)
-	buf.WriteTo(w)
+	// buf.WriteTo(w)
 }
 
 func (app *Application) addLikePost(w http.ResponseWriter, r *http.Request) {
@@ -233,8 +254,8 @@ func (app *Application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	//this will generate a new session id
 
+	//this will generate a new session id
 	err = app.sessionManager.RenewToken(r.Context())
 	if err != nil {
 		app.serverError(w, r, err)

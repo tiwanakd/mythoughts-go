@@ -15,6 +15,7 @@ type TemplateData struct {
 	Thoughts        []models.Thought
 	Thought         models.Thought
 	IsAuthenticated bool
+	CSRFToken       string
 }
 
 func humanDate(t time.Time) string {

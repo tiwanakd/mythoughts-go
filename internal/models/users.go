@@ -11,7 +11,7 @@ import (
 )
 
 type User struct {
-	id             int
+	ID             int
 	Username       string
 	Email          string
 	Name           string
@@ -76,4 +76,27 @@ func (m *UserModel) Authenticate(email, passoword string) (int, error) {
 	}
 
 	return id, nil
+}
+
+func (m *UserModel) Get(id int) (User, error) {
+	var user User
+	stmt := "SELECT id, username, email, name, created FROM users WHERE id = $1"
+
+	err := m.DB.QueryRow(stmt, id).Scan(&user.ID, &user.Username, &user.Email, &user.Name, &user.Created)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return User{}, ErrNoRecord
+		}
+
+		return User{}, err
+	}
+
+	return user, nil
+}
+
+func (m *UserModel) Exists(id int) (bool, error) {
+	var exists bool
+	stmt := "SELECT EXISTS(SELECT true FROM users WHERE id = $1)"
+	err := m.DB.QueryRow(stmt, id).Scan(&exists)
+	return exists, err
 }

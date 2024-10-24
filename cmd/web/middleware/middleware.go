@@ -4,21 +4,29 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+
+	"github.com/alexedwards/scs/v2"
+	"github.com/justinas/nosurf"
 )
 
 type Middleware struct {
-	Logger *slog.Logger
+	Logger         *slog.Logger
+	SessionManager *scs.SessionManager
 	Autheticator
 }
 
+// create an inteface that has the Autheticate Methods from the Application Helpers
+// Application struct will implement this interface which allow to use this funciton in Middleware
 type Autheticator interface {
 	IsAuthenticated(r *http.Request) bool
+	AuthenticateandAddContextKey(id int, w http.ResponseWriter, r *http.Request) *http.Request
 }
 
-func New(logger *slog.Logger, auth Autheticator) *Middleware {
+func New(logger *slog.Logger, sessionManager *scs.SessionManager, auth Autheticator) *Middleware {
 	return &Middleware{
-		Logger:       logger,
-		Autheticator: auth,
+		Logger:         logger,
+		SessionManager: sessionManager,
+		Autheticator:   auth,
 	}
 }
 
@@ -83,10 +91,6 @@ func (m *Middleware) CommonHeaders(next http.Handler) http.Handler {
 	})
 }
 
-// func (m *Middleware) IsAuthenticated(r *http.Request) bool {
-// 	return m.Authenticated
-// }
-
 func (m *Middleware) RequireAuthentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !m.IsAuthenticated(r) {
@@ -95,7 +99,30 @@ func (m *Middleware) RequireAuthentication(next http.Handler) http.Handler {
 		}
 
 		w.Header().Add("Cache-Control", "no-store")
-
 		next.ServeHTTP(w, r)
+	})
+}
+
+func (m *Middleware) NoSurf(next http.Handler) http.Handler {
+	csrfHandler := nosurf.New(next)
+	csrfHandler.SetBaseCookie(http.Cookie{
+		HttpOnly: true,
+		Path:     "/",
+		Secure:   true,
+	})
+
+	return csrfHandler
+}
+
+func (m *Middleware) Autheticate(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id := m.SessionManager.GetInt(r.Context(), "authenticatedUserID")
+		if id == 0 {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		rWithContextKey := m.AuthenticateandAddContextKey(id, w, r)
+		next.ServeHTTP(w, rWithContextKey)
 	})
 }

@@ -17,10 +17,20 @@ const bthThoughtClear = document.getElementById("thought-clear-btn");
 const btnThoughtPost = document.getElementById("thought-post-btn");
 const textArea = document.getElementById("new-tg-box");
 const contentErrordiv = document.getElementById("content-error")
+const newThoughtNavLink = document.getElementById("newThoughtNavLink")
 
 //Show the form and hide the New button when the New button is clicked
 if (newBtn != null) {
     newBtn.addEventListener("click", () => {
+        formContainer.style.display = 'block';
+        closeBtn.style.display = 'inline-block'
+        newBtn.style.display = 'none'
+        btnContainer.classList.add('close-far-end')
+    });
+}
+
+if (newThoughtNavLink!= null) {
+    newThoughtNavLink.addEventListener("click", () => {
         formContainer.style.display = 'block';
         closeBtn.style.display = 'inline-block'
         newBtn.style.display = 'none'
@@ -80,8 +90,13 @@ document.addEventListener("htmx:afterOnLoad", function(event) {
             contentErrorlbl.value = ''
         }
         document.getElementById("thought-form-container").style.display = 'none';
-        newBtn.style.display = 'inline';
-        closeBtn.style.display = 'none';
+        if (newBtn != null){
+            newBtn.style.display = 'inline';
+        }
+
+        if (closeBtn != null){
+            closeBtn.style.display = 'none';
+        }
         textArea.classList.remove("error-field"); // Remove error styles on success
     }
 });
@@ -94,4 +109,13 @@ if (clearUserFormBtn != null){
         document.getElementById("email-input").value = ""; 
         document.getElementById("password-input").value = ""; 
     });
+}
+
+var navLinks = document.querySelectorAll("nav a");
+for (var i = 0; i < navLinks.length; i++) {
+	var link = navLinks[i]
+	if (link.getAttribute('href') == window.location.pathname) {
+		link.classList.add("live");
+		break;
+	}
 }

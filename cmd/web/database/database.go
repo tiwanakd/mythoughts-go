@@ -10,7 +10,7 @@ type Database struct {
 	*sql.DB
 }
 
-func OpenDB(dsn string) (Database, error) {
+func Open(dsn string) (Database, error) {
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return Database{}, err

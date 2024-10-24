@@ -3,6 +3,7 @@
 <h3 class="user-form-heading">Login</h3>
 <div class="user-form-container">
 <form action="/user/login" method="post" novalidate>
+    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
     {{range .Form.NonFieldErrors}}
         <div class="error-invalid-creds">{{.}}</div>
     {{end}}
