@@ -131,6 +131,9 @@ func (m *Middleware) Autheticate(next http.Handler) http.Handler {
 	})
 }
 
+// This middleware checks if the requestURI has /sort/ if it does not
+// use the session manager to remove userThoughtsSort from the request context
+// which is added every time /user/thoughts/view is visited
 func (m *Middleware) SortUserThoughts(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.Contains(r.RequestURI, "/sort/") {
