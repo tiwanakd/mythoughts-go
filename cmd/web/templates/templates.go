@@ -14,6 +14,7 @@ type TemplateData struct {
 	Flash           string
 	Thoughts        []models.Thought
 	Thought         models.Thought
+	User            models.User
 	IsAuthenticated bool
 	CSRFToken       string
 }

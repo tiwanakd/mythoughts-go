@@ -1,11 +1,15 @@
 {{define "title"}}My Thoughts{{end}}
 {{define "main"}}
+<div class="logged-in">Logged in as {{.User.Username}}</div>
 <h3 class="user-form-heading">My Thoughts</h3>
 {{if .Thoughts}}
         {{range .Thoughts}}
             <div class="thought-containter">
                 <div class="thought-content-continer">
                     <h3>{{.Content}}</h3>
+                    <div class="delete-thought">
+                        <img src="/static/img/trash-solid.svg" alt="delete" class="delete-button">
+                    </div>
                 </div>
                 <div class="thought-containter-inner">
                     <div class="thought-btns-user">

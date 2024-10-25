@@ -20,13 +20,6 @@ func (app *Application) home(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	data.Form = newThoughtForm{}
 	data.Thoughts = thoughts
-
-	userThoughtsURI, ok := app.sessionManager.Get(r.Context(), "userThoughtsURI").(string)
-	if ok {
-		app.Logger.Info("home", "uri", userThoughtsURI)
-	} else {
-		app.Logger.Info("home", "uri", "ok")
-	}
 	app.render(w, r, http.StatusOK, "home.html", data)
 }
 
@@ -329,8 +322,16 @@ func (app *Application) userThoughtsView(w http.ResponseWriter, r *http.Request)
 		app.serverError(w, r, err)
 		return
 	}
+
+	user, err := app.users.Get(userID)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
 	data := app.newTemplateData(r)
 	data.Thoughts = thoughts
+	data.User = user
 
 	//use session manager to add a key to request context and set it to true
 	//this will be used in sort handler with asstance of the middleware
