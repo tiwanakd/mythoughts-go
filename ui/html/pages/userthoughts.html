@@ -1,0 +1,24 @@
+{{define "title"}}My Thoughts{{end}}
+{{define "main"}}
+<h3 class="user-form-heading">My Thoughts</h3>
+{{if .Thoughts}}
+        {{range .Thoughts}}
+            <div class="thought-containter">
+                <div class="thought-content-continer">
+                    <h3>{{.Content}}</h3>
+                </div>
+                <div class="thought-containter-inner">
+                    <div class="thought-btns-user">
+                        <button id="agree-btn">&check; | <span id="agree-count-{{.ID}}">{{.AgreeCount}}</span></button>
+                        <button id="disagree-btn">&cross; | <span id="disagree-count-{{.ID}}">{{.DisagreeCount}}</span></button>
+                    </div>
+                    <div class="thought-created">
+                        Created on {{humanDate .Created}}
+                    </div>
+                </div>
+            </div>
+        {{end}}
+    {{else}}
+        <h3>There is nothing here Yet</h3>
+    {{end}}
+{{end}}

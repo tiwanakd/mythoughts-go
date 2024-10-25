@@ -18,6 +18,7 @@
         </div>
         <div class="right-links">
             {{if .IsAuthenticated}}
+                <a href="/user/thoughts/view">My Thoughts</a>
                 <a href="/user/account">Account</a>
                 <form action="/user/logout" method="post">
                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">

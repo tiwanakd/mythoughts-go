@@ -31,12 +31,20 @@ if (newBtn != null) {
 
 if (newThoughtNavLink!= null) {
     newThoughtNavLink.addEventListener("click", () => {
-        formContainer.style.display = 'block';
-        closeBtn.style.display = 'inline-block'
-        newBtn.style.display = 'none'
-        btnContainer.classList.add('close-far-end')
+        sessionStorage.setItem('showForm', 'true');
+        window.location.href = "/";
     });
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+    if (sessionStorage.getItem('showForm') === 'true') {
+        formContainer.style.display = 'block';
+        closeBtn.style.display = 'inline-block';
+        newBtn.style.display = 'none';
+        btnContainer.classList.add('close-far-end');
+        sessionStorage.removeItem('showForm');
+    }
+});
 
 //when the close button is clicked hide the form and close button
 if (closeBtn != null){

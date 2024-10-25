@@ -20,17 +20,8 @@ type ThoughtModel struct {
 	DB *sql.DB
 }
 
-func (m *ThoughtModel) List(sortby string) ([]Thought, error) {
-	var stmt string
-	if sortby == "created" {
-		stmt = "SELECT id, content, created, agreecount, disagreecount, user_id FROM thoughts ORDER BY created DESC"
-	} else if sortby == "agree" {
-		stmt = "SELECT id, content, created, agreecount, disagreecount, user_id FROM thoughts ORDER BY agreecount DESC"
-	} else if sortby == "disagree" {
-		stmt = "SELECT id, content, created, agreecount, disagreecount, user_id FROM thoughts ORDER BY disagreecount DESC"
-	}
-
-	rows, err := m.DB.Query(stmt)
+func (m *ThoughtModel) getThoughts(stmt string, args ...any) ([]Thought, error) {
+	rows, err := m.DB.Query(stmt, args...)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNoRecord
@@ -38,15 +29,11 @@ func (m *ThoughtModel) List(sortby string) ([]Thought, error) {
 		return nil, err
 	}
 
-	var thoughts []Thought
-
-	//create a new variable that holds the UserModel with DB provided by ThoughtModel
-	//this needs to be used to fetch the username which will be added to Thoughts slice
-	users := UserModel{m.DB}
-
+	var thougths []Thought
+	users := UserModel{DB: m.DB}
 	for rows.Next() {
 		var thought Thought
-		err := rows.Scan(&thought.ID, &thought.Content, &thought.Created, &thought.AgreeCount, &thought.DisagreeCount, &thought.UserID)
+		err = rows.Scan(&thought.ID, &thought.Content, &thought.Created, &thought.AgreeCount, &thought.DisagreeCount, &thought.UserID)
 		if err != nil {
 			return nil, err
 		}
@@ -57,10 +44,24 @@ func (m *ThoughtModel) List(sortby string) ([]Thought, error) {
 		}
 
 		thought.Username = user.Username
-		thoughts = append(thoughts, thought)
+		thougths = append(thougths, thought)
 	}
 
-	return thoughts, nil
+	return thougths, nil
+}
+
+func (m *ThoughtModel) List(sortby string) ([]Thought, error) {
+	var stmt string
+	switch sortby {
+	case "agree":
+		stmt = "SELECT id, content, created, agreecount, disagreecount, user_id FROM thoughts ORDER BY agreecount DESC"
+	case "disagree":
+		stmt = "SELECT id, content, created, agreecount, disagreecount, user_id FROM thoughts ORDER BY disagreecount DESC"
+	default:
+		stmt = "SELECT id, content, created, agreecount, disagreecount, user_id FROM thoughts ORDER BY created DESC"
+	}
+
+	return m.getThoughts(stmt)
 }
 
 func (m *ThoughtModel) AddLike(id int) (int, error) {
@@ -115,4 +116,21 @@ func (m *ThoughtModel) Insert(content string, userID int) (Thought, error) {
 	}
 
 	return thought, nil
+}
+
+func (m *ThoughtModel) UserThoughts(userID int, sortby string) ([]Thought, error) {
+	var stmt string
+	switch sortby {
+	case "agree":
+		stmt = `SELECT id, content, created, agreecount, disagreecount, user_id FROM thoughts 
+		WHERE user_id = $1 ORDER BY agreecount DESC`
+	case "disagree":
+		stmt = `SELECT id, content, created, agreecount, disagreecount, user_id FROM thoughts 
+		WHERE user_id = $1 ORDER BY disagreecount DESC`
+	default:
+		stmt = `SELECT id, content, created, agreecount, disagreecount, user_id FROM thoughts 
+		WHERE user_id = $1 ORDER BY created DESC`
+	}
+
+	return m.getThoughts(stmt, userID)
 }

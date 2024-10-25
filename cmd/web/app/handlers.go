@@ -20,21 +20,51 @@ func (app *Application) home(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	data.Form = newThoughtForm{}
 	data.Thoughts = thoughts
+
+	userThoughtsURI, ok := app.sessionManager.Get(r.Context(), "userThoughtsURI").(string)
+	if ok {
+		app.Logger.Info("home", "uri", userThoughtsURI)
+	} else {
+		app.Logger.Info("home", "uri", "ok")
+	}
 	app.render(w, r, http.StatusOK, "home.html", data)
 }
 
 func (app *Application) sort(w http.ResponseWriter, r *http.Request) {
+	sortByUserThoughts, ok := app.sessionManager.Get(r.Context(), "userThoughtsSort").(bool)
+
 	sortby := r.PathValue("sortby")
-	thoughts, err := app.thoughts.List(sortby)
-	if err != nil {
-		app.serverError(w, r, err)
+
+	if sortByUserThoughts && ok {
+		userID, ok := app.sessionManager.Get(r.Context(), "authenticatedUserID").(int)
+		if !ok {
+			app.serverError(w, r, fmt.Errorf("authenticatedUserID: type error"))
+			return
+		}
+
+		thoughts, err := app.thoughts.UserThoughts(userID, sortby)
+		if err != nil {
+			app.serverError(w, r, err)
+			return
+		}
+		data := app.newTemplateData(r)
+		data.Thoughts = thoughts
+
+		app.render(w, r, http.StatusOK, "userthoughts.html", data)
 		return
+	} else {
+		thoughts, err := app.thoughts.List(sortby)
+		if err != nil {
+			app.serverError(w, r, err)
+			return
+		}
+
+		data := app.newTemplateData(r)
+		data.Form = newThoughtForm{}
+		data.Thoughts = thoughts
+		app.render(w, r, http.StatusOK, "home.html", data)
 	}
 
-	data := app.newTemplateData(r)
-	data.Form = newThoughtForm{}
-	data.Thoughts = thoughts
-	app.render(w, r, http.StatusOK, "home.html", data)
 }
 
 type newThoughtForm struct {
@@ -262,7 +292,15 @@ func (app *Application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//store the authenticated userID in request context using session manager
 	app.sessionManager.Put(r.Context(), "authenticatedUserID", id)
+
+	redirectURI := app.sessionManager.PopString(r.Context(), "redirectURI")
+	if redirectURI != "" {
+		http.Redirect(w, r, redirectURI, http.StatusSeeOther)
+		return
+	}
+
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -277,6 +315,29 @@ func (app *Application) userLogout(w http.ResponseWriter, r *http.Request) {
 	app.sessionManager.Put(r.Context(), "flash", "You have been logged out successfully.")
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (app *Application) userThoughtsView(w http.ResponseWriter, r *http.Request) {
+	userID, ok := app.sessionManager.Get(r.Context(), "authenticatedUserID").(int)
+	if !ok {
+		app.serverError(w, r, fmt.Errorf("authenticatedUserID: type error"))
+		return
+	}
+
+	thoughts, err := app.thoughts.UserThoughts(userID, "created")
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+	data := app.newTemplateData(r)
+	data.Thoughts = thoughts
+
+	//use session manager to add a key to request context and set it to true
+	//this will be used in sort handler with asstance of the middleware
+	//to check from where the /sort/{sortby} uri is invoked and will
+	//sort based on home or page or the My Thougts page for the looged in user
+	app.sessionManager.Put(r.Context(), "userThoughtsSort", true)
+	app.render(w, r, http.StatusOK, "userthoughts.html", data)
 }
 
 func (app *Application) userAccountView(w http.ResponseWriter, r *http.Request) {

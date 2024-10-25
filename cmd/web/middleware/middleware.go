@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/justinas/nosurf"
@@ -94,6 +95,9 @@ func (m *Middleware) CommonHeaders(next http.Handler) http.Handler {
 func (m *Middleware) RequireAuthentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !m.IsAuthenticated(r) {
+			//store the requestURI in session so it can be used to redirect the user
+			//on successful login
+			m.SessionManager.Put(r.Context(), "redirectURI", r.RequestURI)
 			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 			return
 		}
@@ -124,5 +128,15 @@ func (m *Middleware) Autheticate(next http.Handler) http.Handler {
 
 		rWithContextKey := m.AuthenticateandAddContextKey(id, w, r)
 		next.ServeHTTP(w, rWithContextKey)
+	})
+}
+
+func (m *Middleware) SortUserThoughts(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !strings.Contains(r.RequestURI, "/sort/") {
+			m.SessionManager.Remove(r.Context(), "userThoughtsSort")
+		}
+
+		next.ServeHTTP(w, r)
 	})
 }

@@ -95,6 +95,22 @@ main{
     transform: translateY(0); 
 }
 
+.thought-btns-user{
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
+    margin-left: 7px;
+}
+
+.thought-btns-user button{
+    padding: 4px 4px;
+    background: none;
+    border-radius: 5px;
+    box-shadow: none;
+    font-family: cursive;
+    font-weight: bold;
+}
+
 .thought-created{
     font-family: cursive;
     font-size: 0.9em;
