@@ -334,11 +334,27 @@ func (app *Application) userThoughtsView(w http.ResponseWriter, r *http.Request)
 	data.User = user
 
 	//use session manager to add a key to request context and set it to true
-	//this will be used in sort handler with asstance of the middleware
+	//this will be used in sort handler with assistance of the middleware
 	//to check from where the /sort/{sortby} uri is invoked and will
-	//sort based on home or page or the My Thougts page for the looged in user
+	//sort based on home page or My Thougts page for the logged in user
 	app.sessionManager.Put(r.Context(), "userThoughtsSort", true)
 	app.render(w, r, http.StatusOK, "userthoughts.html", data)
+}
+
+func (app *Application) DeleteThoughtPost(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	err = app.thoughts.DeleteThought(id)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (app *Application) userAccountView(w http.ResponseWriter, r *http.Request) {

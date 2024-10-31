@@ -15,7 +15,7 @@ func (app *Application) Routes() http.Handler {
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	router.Handle("GET /static/", http.StripPrefix("/static", fileServer))
 
-	dynamic := alice.New(app.sessionManager.LoadAndSave, middleware.NoSurf, middleware.Autheticate, middleware.SortUserThoughts)
+	dynamic := alice.New(app.sessionManager.LoadAndSave, middleware.Autheticate, middleware.NoSurf, middleware.SortUserThoughts)
 
 	router.Handle("GET /{$}", dynamic.ThenFunc(app.home))
 	router.Handle("GET /sort/{sortby}", dynamic.ThenFunc(app.sort))
@@ -31,7 +31,8 @@ func (app *Application) Routes() http.Handler {
 	router.Handle("POST /user/logout", authenticated.ThenFunc(app.userLogout))
 	router.Handle("GET /user/account", authenticated.ThenFunc(app.userAccountView))
 	router.Handle("GET /user/thoughts/view", authenticated.ThenFunc(app.userThoughtsView))
+	router.Handle("DELETE /user/thought/delete/{id}", authenticated.ThenFunc(app.DeleteThoughtPost))
 
-	standard := alice.New(middleware.RecoverPanic, middleware.LogReqest, middleware.CommonHeaders)
+	standard := alice.New(middleware.RecoverPanic, middleware.CommonHeaders, middleware.LogReqest)
 	return standard.Then(router)
 }

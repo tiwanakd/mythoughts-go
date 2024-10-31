@@ -510,3 +510,8 @@ textarea{
 .delete-button:hover {
     transform: scale(1.1);
 }
+
+.thought-containter.htmx-swapping {
+    opacity: 0;
+    transition: opacity 1s ease-out;
+}

@@ -134,3 +134,9 @@ func (m *ThoughtModel) UserThoughts(userID int, sortby string) ([]Thought, error
 
 	return m.getThoughts(stmt, userID)
 }
+
+func (m *ThoughtModel) DeleteThought(id int) error {
+	stmt := "DELETE FROM thoughts WHERE id = $1"
+	_, err := m.DB.Exec(stmt, id)
+	return err
+}

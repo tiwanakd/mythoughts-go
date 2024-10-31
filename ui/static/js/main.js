@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function() {
     if (contentErrordiv != null) {
         contentErrordiv.style.display = "none"
     }
+
+
 });
 
 //add button feature to show and hide the textarea
@@ -126,4 +128,25 @@ for (var i = 0; i < navLinks.length; i++) {
 		link.classList.add("live");
 		break;
 	}
+}
+
+async function deleteThought(id) {
+    let csrfToken = document.getElementsByName("csrf_token")[0].value
+    console.log(csrfToken)
+    try {
+        const response = await fetch(`/user/thought/delete/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-Token': csrfToken 
+            }
+        });
+
+        if (response.ok) {
+            console.log(`Thought ${id} Deleted`)
+        } else {
+            console.error('Failed to delete thought:', response.status);
+        }
+    } catch (error) {
+        console.error('Error deleting thought:', error);
+    }
 }
