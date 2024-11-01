@@ -100,3 +100,16 @@ func (m *UserModel) Exists(id int) (bool, error) {
 	err := m.DB.QueryRow(stmt, id).Scan(&exists)
 	return exists, err
 }
+
+// func (m *UserModel) Update(id int, columnName, value string) error {
+// 	query := fmt.Sprintf("UPDATE users SET %s = $1 WHERE id = $2 RETURNING %s", columnName, columnName)
+
+// 	stmt, err := m.DB.Prepare(query)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer stmt.Close()
+
+// 	var newValue string
+
+// }

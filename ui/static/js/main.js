@@ -130,23 +130,69 @@ for (var i = 0; i < navLinks.length; i++) {
 	}
 }
 
-async function deleteThought(id) {
-    let csrfToken = document.getElementsByName("csrf_token")[0].value
-    console.log(csrfToken)
-    try {
-        const response = await fetch(`/user/thought/delete/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-Token': csrfToken 
-            }
-        });
+const editNameBtn = document.getElementById("edit-name")
+const editUsernameBtn = document.getElementById("edit-username")
+const editEmailBtn = document.getElementById("edit-email")
+const editNameInput = document.getElementById("edit-name-input")
+const editUsernameInput = document.getElementById("edit-username-input")
+const editEmailInput = document.getElementById("edit-email-input")
+const editNameSubmit = document.getElementById("edit-name-submit")
+const editUsernameSubmit = document.getElementById("edit-username-submit")
+const editEmailSubmit = document.getElementById("edit-email-submit")
+const editNameCancel = document.getElementById("edit-name-cancel")
+const editUsernameCancel = document.getElementById("edit-username-cancel")
+const editEmailCancel = document.getElementById("edit-email-cancel")
 
-        if (response.ok) {
-            console.log(`Thought ${id} Deleted`)
-        } else {
-            console.error('Failed to delete thought:', response.status);
-        }
-    } catch (error) {
-        console.error('Error deleting thought:', error);
-    }
+if (editNameBtn != null) {
+    editNameBtn.addEventListener("click", () => {
+        editNameInput.classList.remove('hidden');
+        editNameSubmit.classList.remove('hidden');
+        editNameSubmit.classList.add('edit-submit-btn')
+        editNameCancel.classList.remove('hidden');
+        editNameCancel.classList.add('edit-cancel-btn');
+    });
+}
+
+if (editUsernameBtn != null) {
+    editUsernameBtn.addEventListener("click", () => {
+        editUsernameInput.classList.remove('hidden');
+        editUsernameSubmit.classList.remove('hidden');
+        editUsernameSubmit.classList.add('edit-submit-btn')
+        editUsernameCancel.classList.remove('hidden');
+        editUsernameCancel.classList.add('edit-cancel-btn');
+    })
+}
+
+if (editEmailBtn != null) {
+    editEmailBtn.addEventListener("click", () => {
+        editEmailInput.classList.remove('hidden');
+        editEmailSubmit.classList.remove('hidden');
+        editEmailSubmit.classList.add('edit-submit-btn')
+        editEmailCancel.classList.remove('hidden');
+        editEmailCancel.classList.add('edit-cancel-btn');
+    })
+}
+
+if (editNameCancel != null) {
+    editNameCancel.addEventListener("click", () => {
+        editNameInput.classList.add('hidden');
+        editNameSubmit.classList.add('hidden');
+        editNameCancel.classList.add('hidden');
+    })
+}
+
+if (editUsernameCancel != null) {
+    editUsernameCancel.addEventListener("click", () => {
+        editUsernameInput.classList.add('hidden');
+        editUsernameSubmit.classList.add('hidden');
+        editUsernameCancel.classList.add('hidden');
+    })
+}
+
+if (editEmailCancel != null) {
+    editEmailCancel.addEventListener("click", () => {
+        editEmailInput.classList.add('hidden');
+        editEmailSubmit.classList.add('hidden');
+        editEmailCancel.classList.add('hidden');
+    })
 }

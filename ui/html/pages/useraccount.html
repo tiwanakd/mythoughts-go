@@ -1,0 +1,38 @@
+{{define "title"}}Your Account{{end}}
+{{define "main"}}
+<h3 class="user-form-heading">Your Account</h3>
+<div class="user-info-container">
+    <form action="">
+    {{with .User}}
+    <div>
+        <label for="name">Name: <span class="user-info-span">{{.Name}}</span></label>
+        <img src="/static/img/pencil-solid.svg" alt="pencil" id="edit-name" class="edit-pencil">
+        <input type="text" value="{{.Name}}" class="hidden" id="edit-name-input">
+        <button type="button" class="hidden" id="edit-name-submit">&check;</button>
+        <button type="button" class="hidden" id="edit-name-cancel">&cross;</button>
+    </div>
+    <div>
+        <label for="username">Username: <span class="user-info-span">{{.Username}}</span></label>
+        <img src="/static/img/pencil-solid.svg" alt="pencil" id="edit-username" class="edit-pencil">
+        <input type="text" value="{{.Username}}" class="hidden" id="edit-username-input">
+        <button type="button" class="hidden" id="edit-username-submit">&check;</button>
+        <button type="button" class="hidden" id="edit-username-cancel">&cross;</button>
+    </div>
+    <div>
+        <label for="email">Email: <span class="user-info-span">{{.Email}}</span></label>
+        <img src="/static/img/pencil-solid.svg" alt="pencil" id="edit-email" class="edit-pencil">
+        <input type="email" value="{{.Email}}" class="hidden" id="edit-email-input">
+        <button type="button" class="hidden" id="edit-email-submit">&check;</button>
+        <button type="button" class="hidden" id="edit-email-cancel">&cross;</button>
+    </div>
+    <div class="user-joined-date">
+        <label>Joined on {{humanDate .Created}}</label>
+    </div>
+    <div>
+        <a href="" id="change-passd-btn" class="user-change-btns">Change Password</a>
+        <a href="" id="delete-acc-btn" class="user-change-btns">Delete Account</a>
+    </div>
+    {{end}}
+</form>
+</div>
+{{end}}

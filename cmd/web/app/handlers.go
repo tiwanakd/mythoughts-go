@@ -358,5 +358,21 @@ func (app *Application) DeleteThoughtPost(w http.ResponseWriter, r *http.Request
 }
 
 func (app *Application) userAccountView(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Account page")
+	id, ok := app.sessionManager.Get(r.Context(), "authenticatedUserID").(int)
+	if !ok {
+		app.serverError(w, r, fmt.Errorf("authenticatedUserID: type error"))
+		return
+	}
+
+	user, err := app.users.Get(id)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	data := app.newTemplateData(r)
+	data.User = user
+
+	app.render(w, r, http.StatusOK, "useraccount.html", data)
+
 }
