@@ -2,8 +2,7 @@
 {{define "main"}}
 <h3 class="user-form-heading">Your Account</h3>
 <div class="user-info-container">
-    <form>
-    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+    <form hx-headers='{"X-CSRF-Token": "{{.CSRFToken}}"}'>
     <div>
     {{with .User}}
         <label for="name">Name: <span class="user-info-span" id="user-name">{{.Name}}</span></label>
@@ -63,7 +62,7 @@
     {{end}}
     <div>
         <a href="/user/account/password/update" id="change-passd-btn" class="user-change-btns">Change Password</a>
-        <a href="" id="delete-acc-btn" class="user-change-btns">Delete Account</a>
+        <a id="delete-acc-btn" class="user-change-btns" hx-delete="/user/account/delete" hx-confirm="Are you sure you want to Delete your Account? All of your data will be lost permanently.">Delete Account</a>
     </div>
 </form>
 </div>

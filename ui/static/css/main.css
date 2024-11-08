@@ -27,6 +27,10 @@ h3{
     font-weight: bold;
 }
 
+.no-data-h3{
+    text-align: center;
+}
+
 #display-none{
     margin-top: 60px;
     text-align: center;

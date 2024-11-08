@@ -35,6 +35,7 @@ func (app *Application) Routes() http.Handler {
 	router.Handle("PUT /user/account/password/update", authenticated.ThenFunc(app.userPasswordChangePost))
 	router.Handle("GET /user/thoughts/view", authenticated.ThenFunc(app.userThoughtsView))
 	router.Handle("DELETE /user/thought/delete/{id}", authenticated.ThenFunc(app.DeleteThoughtPost))
+	router.Handle("DELETE /user/account/delete", authenticated.ThenFunc(app.userAccountDelete))
 
 	standard := alice.New(middleware.RecoverPanic, middleware.CommonHeaders, middleware.LogReqest)
 	return standard.Then(router)

@@ -540,3 +540,29 @@ func (app *Application) userPasswordChangePost(w http.ResponseWriter, r *http.Re
 	w.Header().Set("HX-Redirect", "/user/login")
 	w.WriteHeader(http.StatusOK)
 }
+
+func (app *Application) userAccountDelete(w http.ResponseWriter, r *http.Request) {
+	id, ok := app.sessionManager.Get(r.Context(), "authenticatedUserID").(int)
+	if !ok {
+		app.serverError(w, r, fmt.Errorf("authenticatedUserID: type error"))
+		return
+	}
+
+	err := app.users.Delete(id)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	err = app.sessionManager.RenewToken(r.Context())
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.sessionManager.Remove(r.Context(), "authenticatedUserID")
+	app.sessionManager.Put(r.Context(), "flash", "Your User Account has been deleted!")
+
+	w.Header().Set("HX-Redirect", "/")
+	w.WriteHeader(http.StatusOK)
+}

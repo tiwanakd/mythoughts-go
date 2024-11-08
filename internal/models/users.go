@@ -151,3 +151,9 @@ func (m *UserModel) ChangePassword(id int, currentPassword, newPassword string) 
 	_, err = m.DB.Exec(stmt, newHashedPassword, id)
 	return err
 }
+
+func (m *UserModel) Delete(id int) error {
+	stmt := "DELETE FROM users WHERE id = $1"
+	_, err := m.DB.Exec(stmt, id)
+	return err
+}
