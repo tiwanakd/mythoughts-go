@@ -86,20 +86,117 @@ if (btnThoughtPost != null){
     })
 }
 
+const editNameBtn = document.getElementById("edit-name")
+const editUsernameBtn = document.getElementById("edit-username")
+const editEmailBtn = document.getElementById("edit-email")
+
+const editNameInput = document.getElementById("edit-name-input")
+var nameValue = ""; 
+if (editNameInput != null){ 
+    nameValue = editNameInput.value;
+}
+
+const editUsernameInput = document.getElementById("edit-username-input")
+var usernameValue = "";
+if (editUsernameInput != null){
+    usernameValue = editUsernameInput.value;
+}
+
+const editEmailInput = document.getElementById("edit-email-input")
+var emailValue = "";
+if (editEmailInput != null){
+    emailValue = editEmailInput.value;
+}
+
+const editNameSubmit = document.getElementById("edit-name-submit")
+const editUsernameSubmit = document.getElementById("edit-username-submit")
+const editEmailSubmit = document.getElementById("edit-email-submit")
+const editNameCancel = document.getElementById("edit-name-cancel")
+const editUsernameCancel = document.getElementById("edit-username-cancel")
+const editEmailCancel = document.getElementById("edit-email-cancel")
+
+const userEditNameError = document.getElementById("content-error-name")
+const userEditUsernameError = document.getElementById("content-error-username")
+const userEditEmailError = document.getElementById("content-error-email")
+
+const contentErrorlbl = document.getElementById("content-error-lbl");
+const userNameErrorlbl = document.getElementById("user-name-error-lbl")
+const userUameErrorlbl = document.getElementById("user-username-error-lbl")
+const userEmailErrorlbl = document.getElementById("user-email-error-lbl")
+
+const currentPasswordField = document.getElementById("curr-pass")
+const newPasswordField = document.getElementById("new-pass")
+const confirmPasswordField = document.getElementById("conf-pass")
+
 document.addEventListener("htmx:afterOnLoad", function(event) {
     // Check for 422 status to apply error styles and keep form visible
     if (event.detail.xhr.status === 422) {
-        contentErrordiv.style.display = 'inline-block'
-        textArea.classList.add("error-field");
+        if (contentErrordiv != null){
+            contentErrordiv.style.display = 'inline-block'
+        }
+        if (textArea != null) {
+            textArea.classList.add("error-field");
+        }
+
+        const button = event.detail.elt; 
+        const url = button ? button.getAttribute("hx-put") : null;
+        
+        if (url == "/user/account/edit/name"){
+            if (userEditNameError != null){
+                userEditNameError.style.display = 'block'
+            }
+
+            if (editNameInput != null) {
+                editNameInput.classList.add("error-field")
+            }
+        }
+
+        if (url == "/user/account/edit/username"){
+            if (userEditUsernameError != null){
+                userEditUsernameError.style.display = 'block'
+            }
+
+            if (editUsernameInput != null) {
+                editUsernameInput.classList.add("error-field")
+            }
+        }
+
+        if (url == "/user/account/edit/email"){
+            if (userEditEmailError != null){
+                userEditEmailError.style.display = 'block'
+            }
+
+            if (editEmailInput != null) {
+                editEmailInput.classList.add("error-field")
+            }
+        }
+
+        if (url == "/user/account/password/update"){
+            if (currentPasswordField != null  && newPasswordField != null) {
+                currentPasswordField.value = '';
+                newPasswordField.value = '';
+                confirmPasswordField.value = '';
+                currentPasswordField.classList.add("error-field")
+                newPasswordField.classList.add("error-field")
+                confirmPasswordField.classList.add("error-field")
+            }
+        }
+
     } else if (event.detail.xhr.status === 201) {
         // Hide form on successful POST (200)
-        textArea.value = "";
-        const contentErrorlbl = document.getElementById("content-error-lbl");
+        if (textArea != null){
+            textArea.value = "";
+            textArea.classList.remove("error-field");
+        }
         if (contentErrorlbl != null){
             contentErrorlbl.style.display = 'none'
             contentErrorlbl.value = ''
         }
-        document.getElementById("thought-form-container").style.display = 'none';
+
+        const thoughtFormCont = document.getElementById("thought-form-container")
+        if (thoughtFormCont != null){
+            thoughtFormCont.style.display = 'none';
+        }
         if (newBtn != null){
             newBtn.style.display = 'inline';
         }
@@ -107,7 +204,7 @@ document.addEventListener("htmx:afterOnLoad", function(event) {
         if (closeBtn != null){
             closeBtn.style.display = 'none';
         }
-        textArea.classList.remove("error-field"); // Remove error styles on success
+
     }
 });
 
@@ -129,19 +226,6 @@ for (var i = 0; i < navLinks.length; i++) {
 		break;
 	}
 }
-
-const editNameBtn = document.getElementById("edit-name")
-const editUsernameBtn = document.getElementById("edit-username")
-const editEmailBtn = document.getElementById("edit-email")
-const editNameInput = document.getElementById("edit-name-input")
-const editUsernameInput = document.getElementById("edit-username-input")
-const editEmailInput = document.getElementById("edit-email-input")
-const editNameSubmit = document.getElementById("edit-name-submit")
-const editUsernameSubmit = document.getElementById("edit-username-submit")
-const editEmailSubmit = document.getElementById("edit-email-submit")
-const editNameCancel = document.getElementById("edit-name-cancel")
-const editUsernameCancel = document.getElementById("edit-username-cancel")
-const editEmailCancel = document.getElementById("edit-email-cancel")
 
 if (editNameBtn != null) {
     editNameBtn.addEventListener("click", () => {
@@ -178,6 +262,12 @@ if (editNameCancel != null) {
         editNameInput.classList.add('hidden');
         editNameSubmit.classList.add('hidden');
         editNameCancel.classList.add('hidden');
+        editNameInput.classList.remove('error-field')
+        editNameInput.value = nameValue;
+        if (userNameErrorlbl != null){
+            userNameErrorlbl.value = ''
+        }
+        userEditNameError.style.display = 'none'
     })
 }
 
@@ -186,6 +276,12 @@ if (editUsernameCancel != null) {
         editUsernameInput.classList.add('hidden');
         editUsernameSubmit.classList.add('hidden');
         editUsernameCancel.classList.add('hidden');
+        editUsernameInput.classList.remove('error-field')
+        editUsernameInput.value = usernameValue;
+        if (userUameErrorlbl != null){
+            userUameErrorlbl.value = ''       
+        }
+        userEditUsernameError.style.display = 'none'
     })
 }
 
@@ -194,5 +290,12 @@ if (editEmailCancel != null) {
         editEmailInput.classList.add('hidden');
         editEmailSubmit.classList.add('hidden');
         editEmailCancel.classList.add('hidden');
+        editEmailInput.classList.remove('error-field')
+        editEmailInput.value = emailValue;
+        if (userEmailErrorlbl != null){
+            userEmailErrorlbl.value = ''
+        }
+        userEditEmailError.style.display = 'none'
     })
 }
+

@@ -357,6 +357,11 @@ func (app *Application) DeleteThoughtPost(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusOK)
 }
 
+type userEditForm struct {
+	Value string
+	validator.Validator
+}
+
 func (app *Application) userAccountView(w http.ResponseWriter, r *http.Request) {
 	id, ok := app.sessionManager.Get(r.Context(), "authenticatedUserID").(int)
 	if !ok {
@@ -372,7 +377,166 @@ func (app *Application) userAccountView(w http.ResponseWriter, r *http.Request) 
 
 	data := app.newTemplateData(r)
 	data.User = user
+	data.Form = userEditForm{}
 
 	app.render(w, r, http.StatusOK, "useraccount.html", data)
 
+}
+
+func (app *Application) userAccountUpdate(w http.ResponseWriter, r *http.Request) {
+	var form userEditForm
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	columnName := r.PathValue("field")
+	form.Value = r.Form.Get(columnName)
+
+	form.Validator.CheckField(validator.NotBlank(form.Value), columnName, "This field cannot be blank")
+
+	if columnName == "username" {
+		form.Validator.CheckField(validator.MaxChars(form.Value, 15), columnName, "Username cannot be more than 15 characters long")
+		form.Validator.CheckField(validator.MinChars(form.Value, 4), columnName, "Username should have atleast 4 characters")
+	}
+
+	if columnName == "email" {
+		form.Validator.CheckField(validator.Matches(form.Value, validator.EmailRx), columnName, "This field must be valid email address.")
+	}
+
+	if !form.IsValid() {
+		w.Header().Set("HX-Reswap", "innerHTML")
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		data := app.newTemplateData(r)
+		data.Form = form
+
+		tmpl := app.TemplateCache["useraccount.html"]
+
+		if columnName == "name" {
+			err = tmpl.ExecuteTemplate(w, "content-error-block-name", data)
+		} else if columnName == "username" {
+			err = tmpl.ExecuteTemplate(w, "content-error-block-username", data)
+		} else if columnName == "email" {
+			err = tmpl.ExecuteTemplate(w, "content-error-block-email", data)
+		}
+
+		if err != nil {
+			app.serverError(w, r, err)
+		}
+
+		return
+	}
+
+	id, ok := app.sessionManager.Get(r.Context(), "authenticatedUserID").(int)
+	if !ok {
+		app.serverError(w, r, fmt.Errorf("authenticatedUserID: type error"))
+		return
+	}
+
+	_, err = app.users.Update(id, columnName, form.Value)
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	w.Header().Set("HX-Refresh", "true")
+	w.WriteHeader(http.StatusCreated)
+}
+
+type changePasswordForm struct {
+	currentPassword string
+	newPassword     string
+	confirmPassword string
+	validator.Validator
+}
+
+func (app *Application) userPasswordChange(w http.ResponseWriter, r *http.Request) {
+	data := app.newTemplateData(r)
+	data.Form = changePasswordForm{}
+	app.render(w, r, http.StatusOK, "userpassword.html", data)
+}
+
+func (app *Application) userPasswordChangePost(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	var form changePasswordForm
+	form.currentPassword = r.Form.Get("currentPassword")
+	form.newPassword = r.Form.Get("newPassword")
+	form.confirmPassword = r.Form.Get("confirmPassword")
+
+	form.Validator.CheckField(validator.NotBlank(form.currentPassword), "password", "Password fields cannot be blank")
+	form.Validator.CheckField(validator.NotBlank(form.newPassword), "password", " Password fields cannot be blank")
+	form.Validator.CheckField(validator.NotBlank(form.confirmPassword), "password", " Password fields cannot be blank")
+	form.Validator.CheckField(validator.ValidPassword(form.newPassword), "password", "New Password does not meet the length and complexity requirements")
+
+	if form.currentPassword == form.newPassword {
+		form.AddFieldError("password", "New Password cannot be same as Current Password")
+	}
+
+	if form.newPassword != form.confirmPassword {
+		form.AddFieldError("password", "New Passwords not match")
+	}
+
+	if !form.IsValid() {
+		w.Header().Set("HX-Reswap", "innerHTML")
+		w.WriteHeader(http.StatusUnprocessableEntity)
+
+		data := app.newTemplateData(r)
+		data.Form = form
+
+		tmpl := app.TemplateCache["userpassword.html"]
+		err = tmpl.ExecuteTemplate(w, "password-error-block", data)
+		if err != nil {
+			app.serverError(w, r, err)
+		}
+
+		return
+	}
+
+	id, ok := app.sessionManager.Get(r.Context(), "authenticatedUserID").(int)
+	if !ok {
+		app.serverError(w, r, fmt.Errorf("authenticatedUserID: type error"))
+		return
+	}
+
+	err = app.users.ChangePassword(id, form.currentPassword, form.newPassword)
+	if err != nil {
+		if errors.Is(err, models.ErrInvalidCredentails) {
+			form.AddFieldError("password", "Invalid Current Password")
+
+			w.Header().Set("HX-Reswap", "innerHTML")
+			w.WriteHeader(http.StatusUnprocessableEntity)
+
+			data := app.newTemplateData(r)
+			data.Form = form
+
+			tmpl := app.TemplateCache["userpassword.html"]
+			err = tmpl.ExecuteTemplate(w, "password-error-block", data)
+			if err != nil {
+				app.serverError(w, r, err)
+			}
+			return
+		}
+
+		app.serverError(w, r, err)
+		return
+	}
+
+	err = app.sessionManager.RenewToken(r.Context())
+	if err != nil {
+		app.serverError(w, r, err)
+		return
+	}
+
+	app.sessionManager.Remove(r.Context(), "authenticatedUserID")
+	app.sessionManager.Put(r.Context(), "flash", "Password Changed! Please login with your New Password.")
+
+	w.Header().Set("HX-Redirect", "/user/login")
+	w.WriteHeader(http.StatusOK)
 }

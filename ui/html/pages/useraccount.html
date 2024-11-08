@@ -2,37 +2,69 @@
 {{define "main"}}
 <h3 class="user-form-heading">Your Account</h3>
 <div class="user-info-container">
-    <form action="">
+    <form>
+    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+    <div>
+    {{with .User}}
+        <label for="name">Name: <span class="user-info-span" id="user-name">{{.Name}}</span></label>
+    {{end}}
+        <img src="/static/img/pencil-solid.svg" alt="pencil" id="edit-name" class="edit-pencil">
+        <p id="content-error-name" class="content-error-div">
+            {{block "content-error-block-name" .}}
+                {{with .Form.FieldErrors.name}}
+                    <label id="user-name-error-lbl" class="user-error">{{.}}</label>
+                {{end}}
+            {{end}}
+        </p>
+    {{with .User}}
+        <input type="text" value="{{.Name}}" class="hidden" id="edit-name-input" name="name">
+        <button type="button" class="hidden" id="edit-name-submit" hx-put="/user/account/edit/name" hx-target="#user-name" hx-target-422="#content-error-name" hx-confirm="Are you sure you want to change your Name?">&check;</button>
+        <button type="button" class="hidden" id="edit-name-cancel">&cross;</button>
+    {{end}}
+    </div>
     {{with .User}}
     <div>
-        <label for="name">Name: <span class="user-info-span">{{.Name}}</span></label>
-        <img src="/static/img/pencil-solid.svg" alt="pencil" id="edit-name" class="edit-pencil">
-        <input type="text" value="{{.Name}}" class="hidden" id="edit-name-input">
-        <button type="button" class="hidden" id="edit-name-submit">&check;</button>
-        <button type="button" class="hidden" id="edit-name-cancel">&cross;</button>
-    </div>
-    <div>
-        <label for="username">Username: <span class="user-info-span">{{.Username}}</span></label>
+        <label for="username">Username: <span class="user-info-span" id="user-username">{{.Username}}</span></label>
+    {{end}}
         <img src="/static/img/pencil-solid.svg" alt="pencil" id="edit-username" class="edit-pencil">
-        <input type="text" value="{{.Username}}" class="hidden" id="edit-username-input">
-        <button type="button" class="hidden" id="edit-username-submit">&check;</button>
+        <p id="content-error-username" class="content-error-div">
+            {{block "content-error-block-username" .}}
+                {{with .Form.FieldErrors.username}}
+                    <label id="user-username-error-lbl" class="user-error">{{.}}</label>
+                {{end}}
+            {{end}}
+        </p>
+    {{with .User}}
+        <input type="text" value="{{.Username}}" class="hidden" id="edit-username-input" name="username">
+        <button type="button" class="hidden" id="edit-username-submit" hx-put="/user/account/edit/username" hx-target="#user-username" hx-target-422="#content-error-username" hx-confirm="Are you sure you want to change your username?">&check;</button>
         <button type="button" class="hidden" id="edit-username-cancel">&cross;</button>
+    {{end}}
     </div>
+    {{with .User}}
     <div>
-        <label for="email">Email: <span class="user-info-span">{{.Email}}</span></label>
+        <label for="email">Email: <span class="user-info-span" id="user-email">{{.Email}}</span></label>
+    {{end}}
         <img src="/static/img/pencil-solid.svg" alt="pencil" id="edit-email" class="edit-pencil">
-        <input type="email" value="{{.Email}}" class="hidden" id="edit-email-input">
-        <button type="button" class="hidden" id="edit-email-submit">&check;</button>
+        <p id="content-error-email" class="content-error-div">
+            {{block "content-error-block-email" .}}
+                {{with .Form.FieldErrors.email}}
+                    <label id="user-email-error-lbl" class="user-error">{{.}}</label>
+                {{end}}
+            {{end}}
+        </p>
+    {{with .User}}
+        <input type="email" value="{{.Email}}" class="hidden" id="edit-email-input" name="email">
+        <button type="button" class="hidden" id="edit-email-submit" hx-put="/user/account/edit/email" hx-target="#user-email" hx-target-422="#content-error-email" hx-confirm="Are you sure you want to change your email?">&check;</button>
         <button type="button" class="hidden" id="edit-email-cancel">&cross;</button>
     </div>
     <div class="user-joined-date">
         <label>Joined on {{humanDate .Created}}</label>
     </div>
+    {{end}}
     <div>
-        <a href="" id="change-passd-btn" class="user-change-btns">Change Password</a>
+        <a href="/user/account/password/update" id="change-passd-btn" class="user-change-btns">Change Password</a>
         <a href="" id="delete-acc-btn" class="user-change-btns">Delete Account</a>
     </div>
-    {{end}}
 </form>
 </div>
 {{end}}

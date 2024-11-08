@@ -30,6 +30,9 @@ func (app *Application) Routes() http.Handler {
 	router.Handle("POST /thought/new", authenticated.ThenFunc(app.newThoughtPost))
 	router.Handle("POST /user/logout", authenticated.ThenFunc(app.userLogout))
 	router.Handle("GET /user/account", authenticated.ThenFunc(app.userAccountView))
+	router.Handle("PUT /user/account/edit/{field}", authenticated.ThenFunc(app.userAccountUpdate))
+	router.Handle("GET /user/account/password/update", authenticated.ThenFunc(app.userPasswordChange))
+	router.Handle("PUT /user/account/password/update", authenticated.ThenFunc(app.userPasswordChangePost))
 	router.Handle("GET /user/thoughts/view", authenticated.ThenFunc(app.userThoughtsView))
 	router.Handle("DELETE /user/thought/delete/{id}", authenticated.ThenFunc(app.DeleteThoughtPost))
 
