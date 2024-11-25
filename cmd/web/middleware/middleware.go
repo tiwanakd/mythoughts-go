@@ -76,7 +76,7 @@ func (m *Middleware) RecoverPanic(next http.Handler) http.Handler {
 	})
 }
 
-func (m *Middleware) CommonHeaders(next http.Handler) http.Handler {
+func CommonHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Security-Policy",
 			"default-src 'self'; style-src 'self' fonts.googleapis.com; font-src fonts.gstatic.com",
@@ -113,6 +113,7 @@ func (m *Middleware) NoSurf(next http.Handler) http.Handler {
 		HttpOnly: true,
 		Path:     "/",
 		Secure:   true,
+		SameSite: http.SameSiteLaxMode,
 	})
 
 	return csrfHandler

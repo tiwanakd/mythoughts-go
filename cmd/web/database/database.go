@@ -22,9 +22,9 @@ func Open(dsn string) (Database, error) {
 		return Database{}, err
 	}
 
-	return Database{DB: db}, nil
+	return Database{db}, nil
 }
 
-func (d *Database) Close() {
-	d.DB.Close()
+func (db *Database) Close() {
+	db.Close()
 }

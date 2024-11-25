@@ -6,6 +6,16 @@ import (
 	"time"
 )
 
+type ThoughtModelIneterface interface {
+	GetThoughts(stmt string, args ...any) ([]Thought, error)
+	List(sortby string) ([]Thought, error)
+	AddLike(id int) (int, error)
+	AddDislike(id int) (int, error)
+	Insert(content string, userID int) (Thought, error)
+	UserThoughts(userID int, sortby string) ([]Thought, error)
+	DeleteThought(id int) error
+}
+
 type Thought struct {
 	ID            int
 	Content       string
@@ -20,7 +30,7 @@ type ThoughtModel struct {
 	DB *sql.DB
 }
 
-func (m *ThoughtModel) getThoughts(stmt string, args ...any) ([]Thought, error) {
+func (m *ThoughtModel) GetThoughts(stmt string, args ...any) ([]Thought, error) {
 	rows, err := m.DB.Query(stmt, args...)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -61,7 +71,7 @@ func (m *ThoughtModel) List(sortby string) ([]Thought, error) {
 		stmt = "SELECT id, content, created, agreecount, disagreecount, user_id FROM thoughts ORDER BY created DESC"
 	}
 
-	return m.getThoughts(stmt)
+	return m.GetThoughts(stmt)
 }
 
 func (m *ThoughtModel) AddLike(id int) (int, error) {
@@ -132,7 +142,7 @@ func (m *ThoughtModel) UserThoughts(userID int, sortby string) ([]Thought, error
 		WHERE user_id = $1 ORDER BY created DESC`
 	}
 
-	return m.getThoughts(stmt, userID)
+	return m.GetThoughts(stmt, userID)
 }
 
 func (m *ThoughtModel) DeleteThought(id int) error {

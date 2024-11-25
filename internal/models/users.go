@@ -11,6 +11,16 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type UserModelInterface interface {
+	Insert(username, email, name, password string) error
+	Authenticate(email, passoword string) (int, error)
+	Get(id int) (User, error)
+	Exists(id int) (bool, error)
+	Update(id int, columnName, value string) error
+	ChangePassword(id int, currentPassword, newPassword string) error
+	Delete(id int) error
+}
+
 type User struct {
 	ID             int
 	Username       string
@@ -102,27 +112,18 @@ func (m *UserModel) Exists(id int) (bool, error) {
 	return exists, err
 }
 
-func (m *UserModel) Update(id int, columnName, value string) (string, error) {
+func (m *UserModel) Update(id int, columnName, value string) error {
+	query := fmt.Sprintf("UPDATE users SET %s = $1 WHERE id = $2", columnName)
 
-	query := fmt.Sprintf("UPDATE users SET %s = $1 WHERE id = $2 RETURNING %s", columnName, columnName)
-
-	stmt, err := m.DB.Prepare(query)
+	_, err := m.DB.Exec(query, value, id)
 	if err != nil {
-		return "", err
-	}
-	defer stmt.Close()
-
-	var newValue string
-	err = stmt.QueryRow(value, id).Scan(&newValue)
-	if err != nil {
-		return "", err
+		return err
 	}
 
-	return newValue, nil
+	return nil
 }
 
 func (m *UserModel) ChangePassword(id int, currentPassword, newPassword string) error {
-
 	stmt := "SELECT hashed_password FROM users WHERE id = $1"
 
 	var hashedPassword []byte

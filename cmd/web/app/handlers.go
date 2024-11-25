@@ -10,7 +10,7 @@ import (
 	"github.com/tiwanakd/mythoughts-go/internal/validator"
 )
 
-func (app *Application) home(w http.ResponseWriter, r *http.Request) {
+func (app *Application) homeView(w http.ResponseWriter, r *http.Request) {
 	thoughts, err := app.thoughts.List("created")
 	if err != nil {
 		app.serverError(w, r, err)
@@ -435,7 +435,7 @@ func (app *Application) userAccountUpdate(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	_, err = app.users.Update(id, columnName, form.Value)
+	err = app.users.Update(id, columnName, form.Value)
 	if err != nil {
 		app.serverError(w, r, err)
 		return
@@ -565,4 +565,8 @@ func (app *Application) userAccountDelete(w http.ResponseWriter, r *http.Request
 
 	w.Header().Set("HX-Redirect", "/")
 	w.WriteHeader(http.StatusOK)
+}
+
+func (app *Application) ping(w http.ResponseWriter, _ *http.Request) {
+	w.Write([]byte("OK"))
 }

@@ -2,10 +2,12 @@ package templates
 
 import (
 	"html/template"
+	"io/fs"
 	"path/filepath"
 	"time"
 
 	"github.com/tiwanakd/mythoughts-go/internal/models"
+	"github.com/tiwanakd/mythoughts-go/ui"
 )
 
 type TemplateData struct {
@@ -34,7 +36,13 @@ var functions = template.FuncMap{
 func NewTemplateCache() (map[string]*template.Template, error) {
 	cache := map[string]*template.Template{}
 
-	pages, err := filepath.Glob("./ui/html/pages/*.html")
+	// pages, err := filepath.Glob("./ui/html/pages/*.html")
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	//replacing with Embedded filesystem
+	pages, err := fs.Glob(ui.Files, "html/pages/*.html")
 	if err != nil {
 		return nil, err
 	}
@@ -43,21 +51,34 @@ func NewTemplateCache() (map[string]*template.Template, error) {
 		//get the name of the html template file
 		name := filepath.Base(page)
 
-		//parse the base template
-		//adding the FuncMap to use the fucntions in templates
-		ts, err := template.New(name).Funcs(functions).ParseFiles("./ui/html/base.html")
-		if err != nil {
-			return nil, err
+		/*
+			//parse the base template
+			//adding the FuncMap to use the fucntions in templates
+			ts, err := template.New(name).Funcs(functions).ParseFiles("./ui/html/base.html")
+			if err != nil {
+				return nil, err
+			}
+
+			//add any partials to the base template set
+			ts, err = ts.ParseGlob("./ui/html/partials/*.html")
+			if err != nil {
+				return nil, err
+			}
+
+			//finally add the html pages
+			ts, err = ts.ParseFiles(page)
+			if err != nil {
+				return nil, err
+			}
+		*/
+
+		patterns := []string{
+			"html/base.html",
+			"html/partials/*.html",
+			page,
 		}
 
-		//add any partials to the base template set
-		ts, err = ts.ParseGlob("./ui/html/partials/*.html")
-		if err != nil {
-			return nil, err
-		}
-
-		//finally add the html pages
-		ts, err = ts.ParseFiles(page)
+		ts, err := template.New(name).Funcs(functions).ParseFS(ui.Files, patterns...)
 		if err != nil {
 			return nil, err
 		}

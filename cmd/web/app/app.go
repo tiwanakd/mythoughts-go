@@ -16,8 +16,8 @@ import (
 
 type Application struct {
 	Logger         *slog.Logger
-	thoughts       models.ThoughtModel
-	users          models.UserModel
+	thoughts       models.ThoughtModelIneterface
+	users          models.UserModelInterface
 	TemplateCache  map[string]*template.Template
 	sessionManager *scs.SessionManager
 }
@@ -48,8 +48,8 @@ func New() (*Application, *database.Database) {
 
 	app := &Application{
 		Logger:         logger,
-		thoughts:       models.ThoughtModel{DB: db.DB},
-		users:          models.UserModel{DB: db.DB},
+		thoughts:       &models.ThoughtModel{DB: db.DB},
+		users:          &models.UserModel{DB: db.DB},
 		TemplateCache:  templateCache,
 		sessionManager: sessionManger,
 	}
